@@ -14,4 +14,16 @@
 
 注意：当前实现使用临时文件存储（`.data` 目录）。Vercel 无服务器环境中文件系统是短暂的，仅适合演示或测试，生产请使用数据库或外部存储。
 
+Node 版本说明：
+
+已提供 Node 无服务器实现，文件位于 `api/*.js` 和 `lib/storage.js`。使用 Node 部署时请确保 `package.json` 在项目根并指定 Node 引擎。
+
+本地测试 Node: 安装 `vercel` 并运行：
+
+```bash
+npm i -g vercel
+vercel dev
+```
+
+
 

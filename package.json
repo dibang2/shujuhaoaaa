@@ -1,0 +1,14 @@
+{
+  "name": "vercel-node-data-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "engines": {
+    "node": "16.x"
+  },
+  "dependencies": {}
+}
+
+
