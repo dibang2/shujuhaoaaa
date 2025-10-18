@@ -2,6 +2,7 @@ import os
 import json
 import uuid
 from threading import Lock
+from typing import List, Optional
 
 
 class Storage:
