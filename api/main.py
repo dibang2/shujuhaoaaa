@@ -1,0 +1,54 @@
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
+from typing import List, Optional
+from lib.storage import Storage
+
+app = FastAPI()
+storage = Storage()
+
+
+class UploadDataRequest(BaseModel):
+    lines: List[str]
+
+
+class UploadAccountRequest(BaseModel):
+    account: str
+
+
+class KeyRequest(BaseModel):
+    key: str
+
+
+@app.post("/upload_data")
+async def upload_data(payload: UploadDataRequest):
+    """Accepts a list of lines (each line is one data item)."""
+    saved = storage.append_lines(payload.lines)
+    return {"saved": saved}
+
+
+@app.post("/upload_account")
+async def upload_account(payload: UploadAccountRequest):
+    """Store an account string and return an API key for it."""
+    key = storage.save_account(payload.account)
+    return {"key": key}
+
+
+@app.post("/get_account")
+async def get_account(payload: KeyRequest):
+    """Return the account associated with a key."""
+    account = storage.get_account(payload.key)
+    if account is None:
+        raise HTTPException(status_code=404, detail="key not found")
+    return {"account": account}
+
+
+@app.get("/")
+async def index():
+    try:
+        html = open("index.html", "r", encoding="utf-8").read()
+    except Exception:
+        html = "<html><body><h1>index.html not found</h1></body></html>"
+    return HTMLResponse(content=html)
+
+

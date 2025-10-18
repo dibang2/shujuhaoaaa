@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>上传数据并管理账号</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;margin:24px}
+    textarea{width:100%;height:120px}
+    input[type=text]{width:100%}
+    .box{margin-bottom:16px}
+  </style>
+</head>
+<body>
+  <h1>上传数据（每行一个）</h1>
+  <div class="box">
+    <textarea id="dataLines" placeholder="每行一个数据"></textarea>
+    <button id="uploadData">上传数据</button>
+    <div id="dataResult"></div>
+  </div>
+
+  <h2>添加账号并生成密钥</h2>
+  <div class="box">
+    <input type="text" id="accountInput" placeholder="账号字符串" />
+    <button id="uploadAccount">生成密钥</button>
+    <div id="accountResult"></div>
+  </div>
+
+  <h2>通过密钥获取账号</h2>
+  <div class="box">
+    <input type="text" id="keyInput" placeholder="在此输入密钥" />
+    <button id="getAccount">查询账号</button>
+    <div id="getResult"></div>
+  </div>
+
+  <script>
+    async function postJson(path, body){
+      const res = await fetch(path, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      return res.json();
+    }
+
+    document.getElementById('uploadData').addEventListener('click', async ()=>{
+      const text = document.getElementById('dataLines').value;
+      const lines = text.split('\n').map(l=>l.trim()).filter(l=>l.length);
+      const r = await postJson('/upload_data', {lines});
+      document.getElementById('dataResult').innerText = '已保存行数: '+ r.saved;
+    });
+
+    document.getElementById('uploadAccount').addEventListener('click', async ()=>{
+      const account = document.getElementById('accountInput').value.trim();
+      if(!account){alert('请输入账号');return}
+      const r = await postJson('/upload_account', {account});
+      document.getElementById('accountResult').innerText = '密钥: ' + r.key;
+    });
+
+    document.getElementById('getAccount').addEventListener('click', async ()=>{
+      const key = document.getElementById('keyInput').value.trim();
+      if(!key){alert('请输入密钥');return}
+      const r = await postJson('/get_account', {key});
+      if(r.account){
+        document.getElementById('getResult').innerText = '账号: '+ r.account;
+      }else{
+        document.getElementById('getResult').innerText = '未找到账号';
+      }
+    });
+  </script>
+</body>
+</html>
+
+
